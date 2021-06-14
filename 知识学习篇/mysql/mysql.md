@@ -8,10 +8,13 @@ show engines 显示存储引擎
 * MyISAM
 每个表有两个文件：MYD 数据文件 ，MYI是索引文件。
 #### 区别
+1. innodb 支持事务，支持行级锁，支持外键
+2. innoDb 支持XA事务
+3. innoDb 支持savePoints(用于回滚)
+
 XA start 'test' 开启事务
 
-
-回滚p1
+Savepoints用于回滚p1
 ```
 insert into xxx VALUES(1)
 insert into xxx VALUES(2)
@@ -20,3 +23,24 @@ insert into xxx VALUES(3)
 insert into xxx VALUES(4)
 rollback p1
 ```
+
+### mysql的锁有哪些？什么是间歇锁
+#### 从锁的粒度来分
+##### 1、行锁
+加锁粒度小，但是加锁资源开销比较大。innoDb支持
+1. 共享锁： 读锁。多个事务可以对同一个数据共享同一把锁，持有锁的事务都可以访问数据，但是只读不能修改，select xxx LOCK IN SHARE MODE
+2. 排它锁：写锁。只有一个事务能够获取排它锁，其他事务不能获取该行的地址innoDb会对 更新/删除/插入 语句自动添加排它锁。select xxx FOR UPDATE
+3. 自增锁： 通常是正对MySql当中的自增字段，如果有事务回滚这种情况，数据会回滚，但是自增序列不回滚。
+
+##### 2、表锁
+加锁粒度大，资源开销小。MyISAM 和innoDb都支持
+1. 表共享读锁
+2. 表排它写锁
+3. 意向锁:是innoDb自动添加一种锁，不需要用户干预
+##### 3、全局锁
+加锁之后整个数据库实例都处于只读状态。所有的数据变更操作都会挂起。一般用于全库备份的时候。
+
+#### 常见锁的算法
+1. 记录锁
+2. 间歇锁:Repeatable Read。RR隔离级别下，会加间歇锁.锁一定的范围，不锁记录。
+3. Next-key：间歇锁+右记录锁
