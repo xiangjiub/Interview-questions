@@ -29,8 +29,8 @@ vue组件可能存在多个实例，如果使用对象形式定义data，则会�
 
 20kB min+gzip 运行大小、超快虚拟 DOM、最省心的优化
 #### MVC、MVVM、
-![mvvm](2.png)
-![](1.png)
+![mvvm](1.png)
+![](2.png)
 
 #### vue中组件之间的通信
 1. 父子组件通信 props
