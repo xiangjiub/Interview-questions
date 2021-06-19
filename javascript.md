@@ -1,0 +1,72 @@
+#### 预编译
+1. 创建AO对象
+2. 找形参和变量的声明,作为ao对象的属性名，值为undefined
+3. 实参和形参相统一
+4. 找函数声明，会覆盖变量的声明
+AO:{
+
+}
+
+#### 箭头函数的this
+箭头函数中的this时在定义函数的时候绑定，而不是在执行函数的时候绑定。
+
+箭头函数中，this指向的固定化，并不是因为箭头函数内部有绑定this机制，实际原因是因为*箭头函数根本没有自己的this*，导致内部的this就是外层代码块的this。正是因为他没有this所以不能用作构造函数。
+
+### 深浅拷贝
+
+#### 类型
+1. 基本类型 null、number、boolean、undefined、string  **堆中**
+2. 引用类型obj **栈中**
+
+var obj = {}
+obj存在栈中，{}存在堆中.
+#### 浅拷贝、深拷贝
+1. 浅拷贝：是创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。**如果属性是基本类型,拷贝的就是基本类型的值，互不影响**。**如果属性是引用类型，拷贝的就是内存的地址**，所以如果其中一个对象改变了这个地址，就会影响到另一个对象。
+![浅拷贝例子](./images/1.png)
+![浅拷贝运行结果](./images/2.png)
+引用类型的值改变了，基本类型没变。
+
+
+2. 深拷贝：是将一个对象从内存中完整的拷贝一份出来，从堆内存中开辟一个新的区域用于存放新对象，且修改新对象不会影响到原对象。
+    * Object.assign()是深拷贝
+
+    那么深拷贝可能就需要层层递归，复制对象的所有属性，包括对象属性的属性的属性，有人想出了用JSON的解析实现
+    ``` javascript
+    function deepCopy(obj){
+        if(typeof obj !== "object"){ return ;}
+        var str = JSON.stringify(obj);
+        return JSON.parse(str);
+    }
+    ```
+    上面的方法不适用的条件是
+    * 需要考虑把函数，正则等特殊数据类型复制
+    * 当前对象不支持JSON
+    * JSON复制会忽略掉值为undefined以及函数表达式
+    ```javascript
+    var obj = {
+        a: 1,
+        b: 2,
+        c: undefined,
+        sum: function() { return a + b; }
+    };
+    var obj2 = JSON.parse(JSON.stringify(obj));
+    console.log(obj2);//输出：Object {a: 1, b: 2}
+    ```
+    完整的深拷贝如下
+    ![完整的深拷贝](./images/3.png)
+3. 赋值
+
+    *以下例子为赋值：*
+    var per = {name:'小李'}
+    var per1 = per
+    per1.name='张'
+
+    console.log(per)
+    console.log(per1)
+    对象的赋值就是简单的引用,a = [1,2,3], b=a, 在上述情况下,a和b是一样的,他们指向同一片内存,b不过是a的别名,是引用
+    赋值操作(包括对象作为参数、返回值),不会开辟新的内存空间,他只是赋值了对象的引用.也就是除了b这个名字之外,没有其他的内存开销,修改了a也就影响了b,修改了b,也就影响了a.
+
+#### instanceof 
+A instanceof B
+
+B的 prototype 在左边变量A的原型链上即可
