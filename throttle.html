@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>节流</title>
+</head>
+<body>
+    <button id='btn'>点击</button>
+    <script>
+        var btn = document.getElementById('btn');
+
+        function thro(delay){
+            let timer
+            return function(){
+                if(!timer){
+                    timer = setTimeout(function(){
+                        console.log('执行了点击')
+                        timer = null;
+                    },delay)
+                }
+            }
+        }
+        
+        btn.onclick = thro(2000)
+    </script>
+</body>
+</html>

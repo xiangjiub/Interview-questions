@@ -70,3 +70,49 @@ obj存在栈中，{}存在堆中.
 A instanceof B
 
 B的 prototype 在左边变量A的原型链上即可
+
+#### 防抖
+当持续触发事件，一定事件内没有再触发事件 事件处理函数才会执行一次 如果设定的时间到来之前 又一次触发了事件  就重新开始延时
+```html
+   <input type="text" id="input">
+    <script>
+        var input = document.getElementById('input')
+        let timer
+        function debounce(delay,value){
+            clearInterval(timer)
+            timer = setTimeout(function(){
+                console.log(value)
+            },delay)
+        }
+        input.addEventListener('keyup',function(e){
+            debounce(1000,e.target.value)
+        })
+    </script>
+```
+常见的浏览器宽度的改变，输入框。
+#### 节流函数
+当触发事件的时候，保证一段时间 只调用一次事件处理函数。
+
+一段时间只做一件事情。
+
+案例：典型的案例就是鼠标不断点击触发，规定再n秒内多次点击只有一次生效。
+```html
+    <button id='btn'>点击</button>
+    <script>
+        var btn = document.getElementById('btn');
+
+        function thro(delay){
+            let timer
+            return function(){
+                if(!timer){
+                    timer = setTimeout(function(){
+                        console.log('执行了点击')
+                        timer = null;
+                    },delay)
+                }
+            }
+        }
+        
+        btn.onclick = thro(2000)
+    </script>
+```
