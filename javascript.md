@@ -116,3 +116,67 @@ B的 prototype 在左边变量A的原型链上即可
         btn.onclick = thro(2000)
     </script>
 ```
+#### 闭包
+```javascript
+function a(){
+    var a = 123
+    function b(){
+        var b = 234
+        console.log(a)
+    }
+    return b
+}
+var res = a()
+res()
+```
+
+#### 哪些操作会造成内存泄漏
+* 闭包
+* 意外的全局变量
+* 被遗忘的定时器
+* 脱离dom的引用
+
+#### 高阶函数
+
+将函数作为参数或者返回值的函数
+
+#### 手写`Array.prototype.map`的方法
+
+```javascript
+    var arr = [1,2,3]
+    // var array = arr.map((item,index) =>{
+    //     return item * 2
+    // })
+    // console.log(array)
+    function map(arr,mapCallback) {
+        if (!Array.isArray(arr) || !arr.length || typeof mapCallback !== 'function'){
+            return []
+        }else{
+            let result = []
+            for (let i = 0; i < arr.length; i++) {
+                // const element = arr[i];
+                result.push(mapCallback(arr[i],i,arr))
+            }
+            return result
+        }
+    }
+    var res = map(arr,(item) => {
+        return item * 2
+    })
+    console.log(res)
+```
+
+#### js时间循环机制 event-loop
+
+* 调用栈
+* 微任务队列
+* 消息队列
+
+js异步操作 比如fetch、setTimeout、setInterval 压入到调用栈中的时候里面的消息会进入到消息队列中去 。 消息队列中 会等到调用栈清空之后在执行
+
+promise async await的异步操作的时候会加入到微任务中去  会在调用栈清空的时候立即执行。调用栈中加入的微任务会比消息队列先执行
+
+
+#### 单例模式的理解
+定义：1、只有一个实例   2、可以全局的访问
+需求： 弹窗 
