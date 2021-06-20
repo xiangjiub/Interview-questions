@@ -96,7 +96,7 @@ B的 prototype 在左边变量A的原型链上即可
 一段时间只做一件事情。
 
 案例：典型的案例就是鼠标不断点击触发，规定再n秒内多次点击只有一次生效。
-```html
+```javascript
     <button id='btn'>点击</button>
     <script>
         var btn = document.getElementById('btn');
