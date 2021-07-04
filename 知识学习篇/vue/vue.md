@@ -73,3 +73,75 @@ vue组件可能存在多个实例，如果使用对象形式定义data，则会�
 watch 需要在数据变化时执行异步或开销较大的操作时，简单讲，当一条数据影响多条数据，例如搜索数据。监听
 computed 对于任何复杂逻辑或一个数据属性在它所依赖的属性发生变化时，也要发生变化时。计算属性
 #### 对vue生命周期的理解
+mounted中并不会保证所有子组件都被挂载完成后再触发，因此当你希望视图完全渲染完成后再做某些事情时，请在mounted中使用$nextTick。
+
+#### js事件循环
+js处理异步主要有微任务和宏任务，而从一开始执行一个宏任务 => 执行完这个宏任务中所有的同步代码 => 清空当前微任务队列中所有微任务 => UI渲染。这就是一个事件循环。然后开始执行下一个宏任务（相当于下一轮循环。）
+#### nextTick实现原理？
+理解：（宏任务和微任务）异步方法
+nextTick方法主要是使用了宏任务和微任务。定义了一个异步方法，多次调用nextTick会将方法存放到队列中，通过这个异步方法清空当前队列，所以这个nextTick方法就是异步方法。
+
+**nextTick 可以让我们在下次 DOM 更新循环结束之后执行延迟回调，用于获得更新后的 DOM。**
+
+***参考***
+<!-- https://blog.csdn.net/weixin_42707287/article/details/111931861 -->
+[](https://blog.csdn.net/weixin_42707287/article/details/111931861)
+
+#### vue DOM更新为什么是异步的？
+```vue
+changeValue () {
+    this.message = 'hello zhangShan'
+    this.message = 'hello liShi'
+    this.message = 'hello wangWu'
+    this.message = 'hello chenLiu'
+    console.log(this.$refs.dom.innerText)
+}
+```
+上图这样，如果vue同步更新的话，将会造成4次dom更新。故vue是异步dom更新的
+
+***原理：***
+Vue在更新Dom时是异步执行的。只要监听到数据变化，Vue将开启一个队列，并缓冲在同一事件循环中发生的所有数据变更。如果同一个Watcher被多次触发，只会被推入队列中一次。这种缓冲时去除重复数据对于避免不必要的计算和DOM操作是非常重要的。然后，在下一个的事件循环“tick”中，Vue刷新队列并执行实际（已去重的）工作。Vue在内部对异步队列尝试使用原生的Promise.then、MutationObserver（mutationObserver在vue2.5以后被弃用） 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0) 代替。
+
+#### watch computed 区别
+
+
+#### Proxy
+const p = new Proxy(target, handler)
+* target 
+
+    要使用 Proxy 包装的目标对象（可以是任何类型的对象，包括原生数组，函数，甚至另一个代理）。
+
+* handler
+
+    一个通常以函数作为属性的对象，各属性中的函数分别定义了在执行各种操作时代理 p 的行为。
+    <!-- 一个通常以函数作为属性的对象，用来定制拦截行为 -->
+
+1. 模板是怎么编绎的?
+2. 生命周期是怎么挂载的?
+3. 组件是怎么注册的?
+4. 响应式怎么做到的?
+
+
+#### Vue把虚拟dom(vnode)转化为真实dom的过程
+第一步拿到我们写的template模版，通过complie编译成AST抽象语法树
+第二部通过createElement方法把语法书转换为vnode
+最后就是通过render方法把vnode变为真实dom
+![](真是dom.png)
+
+#### js运行机制
+（1）所有同步任务都在主线程上执行，形成一个执行栈（execution context stack）。
+
+（2）主线程之外，还存在一个"任务队列"（task queue）。只要异步任务有了运行结果，就在"任务队列"之中放置一个事件。
+
+（3）一旦"执行栈"中的所有同步任务执行完毕，系统就会读取"任务队列"，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。
+
+（4）主线程不断重复上面的第三步
+
+#### 组件渲染和更新过程？
+渲染组件时，会通过Vue.extend 方法构建子组件的构造函数，并进行实例化。最终手动调用 $mount()进行挂载。更新组件时会进行patchVnode流程。核心就时diff算法。
+
+#### 事件绑定的原理?
+vue的事件绑定分为两种。一种原生事件的绑定。一种是组件的事件绑定。
+
+1. 原生的dom事件绑定采用的是addEventListener实现的
+2. 组件绑定事件采用的是$on方法
